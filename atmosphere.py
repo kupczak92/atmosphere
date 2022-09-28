@@ -6,6 +6,7 @@ import numpy as np
 
 from setuptools import Command
 
+#tworzenie okienka
 window = tk.Tk()
 
 window.title("Predominance Area Diagram")
@@ -75,7 +76,7 @@ Mn = tk.IntVar()
 checkbutton = tk.Checkbutton(window, text="Mn", variable=Mn, \
                          onvalue=1, offvalue=0).place(x=250, y=115)
 
-# CuO Rozpada się w temperaturacvh 800-100 C
+# CuO Rozpada się w temperaturacvh 800-100 C - nie ma sensu uwzględniać w obliczeniach
 # #CuO = tk.IntVar() 
 #checkbutton = tk.Checkbutton(window, text="Cu" + u'\u2082' + "O/CuO", variable=CuO, \
  #                        onvalue=1, offvalue=0).place(x=160, y=135)
@@ -89,9 +90,11 @@ Fe2O3 = tk.IntVar()
 checkbutton = tk.Checkbutton(window, text='Fe' + u'\u2083' + "O" + u'\u2084' + "Fe" + u'\u2082' + 'O' + u'\u2083', variable=Fe2O3, \
                          onvalue=1, offvalue=0).place(x=150, y=155)
 
+#obliczanie lotności po kliknięciu w calculate
 def obliczenia(event):
     temperatura = int(entry.get())
-    temp = (float(((temperatura+273)-1000)/100)+1)
+    temp = (float(((temperatura+273)-1000)/100)+1) #konwersja temperatury z K na C (dodatkowo funkcja opisująca zależność temperatury od stałej K była przygotowana dla zakresu 1000-2000 K dlatego takie obliczenia)
+    #obliczanie stałych K (jako logK) na podstawie wykresów zrobionych w excelu
     global stala_PbS
     stala_PbS = float(0.00007  * (temp ** 4) - 0.0041 * (temp ** 3) + 0.0892 * (temp ** 2) -1.0184 * temp + 4.8541)
     global stala_PbO
@@ -120,6 +123,7 @@ def obliczenia(event):
     stala_MnO = float(-0.0045 * (temp ** 3) + 0.1453 * (temp ** 2) -2.1723 * temp + 18.289)
     global stala_MnS
     stala_MnS = float(-0.0028 * (temp ** 3) + 0.098 * (temp ** 2) -1.5415 * temp + 12.529)
+    #od tej pory obliczana jest lotność O2 dla równowagi pomiędzy fazami metalicznymi a tlenkami
     global PbO_Pb
     PbO_Pb = -2* stala_PbO
     PbO_Pb = round(PbO_Pb, 2)
@@ -146,6 +150,7 @@ def obliczenia(event):
     #global CuO_Cu20
     #CuO_Cu20 = -4 * (stala_CuO - (1/2 * stala_Cu2O))
     #CuO_Cu20 = round(CuO_Cu20, 2)
+    #obliczanie lotności S2 pomiędzy fazami siarczkowymi a metalicznymi
     global PbS_Pb
     PbS_Pb = -2* stala_PbS
     PbS_Pb = round(PbS_Pb, 2)
@@ -170,7 +175,7 @@ def obliczenia(event):
     stala_Cu2O_Cu2S = float(stala_Cu2S - stala_Cu2O)
     global stala_MnO_MnS
     stala_MnO_MnS = float(stala_MnS - stala_MnO)
-   
+    # określanie lotności pomiędzy fazami siarczkowymi a tlenkowymi
     global lista_logPb
     lista_logPb = [PbS_Pb, PbS_Pb + 1, PbS_Pb + 2, PbS_Pb + 3, PbS_Pb + 4]
 
@@ -197,6 +202,7 @@ def obliczenia(event):
     global lista_logSCu2
     lista_logSCu2 = [x + (2*stala_Cu2O_Cu2S) for x in lista_logCu]
     
+    #wprowadzenie wartości w okienku aplikacji
     label_Pb2 = tk.Label(text= PbO_Pb).place(x=115, y=180)
     label_Pb4 = tk.Label(text = PbS_Pb).place(x=315, y=180)
 
@@ -215,7 +221,7 @@ def obliczenia(event):
     #label_Cu6 = tk.Label(text = CuO_Cu20).place(x=130, y=300)
     label_Cu4 = tk.Label(text = Cu2S_Cu).place(x=315, y=240)
 
-
+#funkcja tworząca wykres po kliknięciu w przycisk "plot"
 
 def plotting(event):
     if Pb.get() == 1:
@@ -277,7 +283,7 @@ button2.bind("<Button-1>", plotting)
 
 button2.pack()
 
-#obliczenia lotności
+#tekst który będzie cały czas widoczny w okienku aplikacji
 label_oblicz = tk.Label(text = "mark phases before plotting").place(x=0, y=95)
 
 label_Pb1 = tk.Label(text = 'logP O' + u'\u2082' + ' for Pb/PbO:').place(x=0, y=180)
